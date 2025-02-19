@@ -44,18 +44,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+    public OAuth2AuthorizationServerConfigurer authorizationServerConfigurer() {
+        return new OAuth2AuthorizationServerConfigurer();
+    }
 
-        // Deprecato e non più necessario, SpringBootAutoConfiguration si occupa già di applicare la security predefinita per il server di autorizzazione se trova le dipendenze corrette nel classpath
-        //OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+    @Bean
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http, OAuth2AuthorizationServerConfigurer serverConfigurer) throws Exception {
+
+        serverConfigurer
+                .oidc(withDefaults());
 
         http
-                .getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-                .oidc(withDefaults()); // Enable OpenID Connect
-
-        http
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))) // Redirect al login quando non autenticato
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults())); // Posso sostituire withDefaults() con jwt -> {} ed impostare personalizzazioni
+                .securityMatcher("/oauth2/**")
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()));
 
         return http.build();
     }
@@ -63,6 +65,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/**")
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .formLogin(withDefaults()); // Gestisce il redirect al login dalla filterChain dell`authServer
 
