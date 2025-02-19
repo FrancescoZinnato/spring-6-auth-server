@@ -29,4 +29,13 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .formLogin(withDefaults()); // Gestisce il redirect al login dalla filterChain dell`authServer
+
+        return http.build();
+    }
+
 }
