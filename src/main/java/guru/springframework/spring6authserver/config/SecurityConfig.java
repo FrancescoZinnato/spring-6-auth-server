@@ -40,7 +40,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
             throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http); // Trovare una soluzione nuova
+        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http); // Trovare una soluzione nuova -> http.with(OAuth2AuthorizationServerConfigurer.authorizationServer(), Customizer.withDefaults());
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
         http
