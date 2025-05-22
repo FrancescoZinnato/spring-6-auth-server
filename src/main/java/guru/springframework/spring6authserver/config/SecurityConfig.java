@@ -45,10 +45,10 @@ public class SecurityConfig {
                 .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
         http
                 // Redirect to the login page when not authenticated from the authorization endpoint
-                .exceptionHandling((exceptions) -> exceptions
+                /*.exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(
                                 new LoginUrlAuthenticationEntryPoint("/login"))
-                )
+                )*/
                 // Accept access tokens for User Info and/or Client Registration
                 .oauth2ResourceServer((oauth2) -> oauth2
                         .jwt(Customizer.withDefaults()));
@@ -135,7 +135,9 @@ public class SecurityConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+                //.issuer("http://auth-server:9000")
+                .build();
     }
 }
 
